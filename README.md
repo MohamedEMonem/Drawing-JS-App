@@ -1,4 +1,4 @@
-Here's a `README.md` file tailored for your Drawing JS App, including detailed technical notes about the code:
+
 
 ```markdown
 # Drawing JS App
