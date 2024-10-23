@@ -225,7 +225,7 @@ function scanImageForShapes() {
             const g = data[index + 1];
             const b = data[index + 2];
 
-            // Check for black pixels (you can adjust the threshold)
+            // Check for black pixels (threshold is adjustable)
             if (r < 100 && g < 100 && b < 100) {
                 ctx.beginPath();
                 ctx.moveTo(x, y); // Start drawing from this pixel
