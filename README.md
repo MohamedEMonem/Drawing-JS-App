@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 87107b8c4589872191c512066a449336e2541871
 ```markdown
 # Drawing JS App
 
@@ -142,4 +147,8 @@ Contributions are welcome! Please open an issue or submit a pull request.
 This project is licensed under the MIT License.
 ```
 
+<<<<<<< HEAD
 Feel free to adjust any sections further to better fit your project's specifics! You can copy this text and save it as `README.md` in your project directory.
+=======
+Feel free to adjust any sections to better fit your project's specifics! You can copy this text and save it as `README.md` in your project directory.
+>>>>>>> 87107b8c4589872191c512066a449336e2541871
