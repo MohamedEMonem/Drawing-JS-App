@@ -136,12 +136,5 @@ The `scripts/app.js` file handles all the drawing logic and user interactions.
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
-## License
-
-This project is licensed under the MIT License.
-```
-
-
-Feel free to adjust any sections further to better suit your project's specifics! You can copy this text and save it as `README.md` in your project directory.
 
 
