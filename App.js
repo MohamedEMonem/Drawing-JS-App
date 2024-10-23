@@ -6,7 +6,7 @@ const numberInput = document.getElementById('sidesValue');
 const organicOptions = document.getElementById('organicOptions');
 const organicFactorInput = document.getElementById('organicFactor');
 const organicValueInput = document.getElementById('organicValue');
-const formElement = document.getElementById('drawForm');
+const drawButton = document.getElementById('drawButton');
 const clearButton = document.getElementById('clearButton');
 const borderCheckbox = document.getElementById('border');
 const imageUpload = document.getElementById('imageUpload');
@@ -14,19 +14,18 @@ const imageUpload = document.getElementById('imageUpload');
 let uploadedImage = null; // Variable to store the uploaded image
 const outlineCheckbox = document.getElementById('Outline'); // Reference to the Outline checkbox
 
-
-// Show or hide the polygon sides input, organic options, and image upload based on the selected shape
+// Show or hide relevant inputs based on selected shape
 selectElement.addEventListener('change', function () {
     const selectedValue = selectElement.value;
     document.getElementById('sidesRange').style.display = selectedValue === 'polygon' ? 'block' : 'none';
-    organicOptions.style.display = selectedValue === 'organic' ? 'block' : 'none'; // Show organic options for organic shapes
-    imageUpload.style.display = selectedValue === 'image' ? 'block' : 'none'; // Show image upload only for 'Draw Image'
+    organicOptions.style.display = selectedValue === 'organic' ? 'block' : 'none'; // Show organic options
+    imageUpload.style.display = selectedValue === 'image' ? 'block' : 'none'; // Show image upload
 
-    // Show the outline checkbox for other shapes
+    // Show outline checkbox for other shapes
     outlineCheckbox.style.display = selectedValue !== 'image' ? 'inline-block' : 'none';
 });
 
-// Handle image upload and drawing the image
+// Handle image upload
 imageUpload.addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (file) {
@@ -55,31 +54,26 @@ organicFactorInput.addEventListener('input', function () {
     organicValueInput.value = organicFactorInput.value;
 });
 
+// Sync number input with the range slider
 numberInput.addEventListener('input', function () {
     rangeElement.value = numberInput.value;
 });
 
-// Handle form submission (drawing shapes)
-formElement.addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent default form submission
-
-    const shape = document.getElementById('shape').value;
+// Handle the draw button click to draw shapes
+drawButton.addEventListener('click', function () {
+    const shape = selectElement.value;
     const color = document.getElementById('color').value;
-    const sides = parseInt(numberInput.value);
-    const organicFactor = parseInt(organicValueInput.value);
+    const sides = parseInt(numberInput.value, 10);
+    const organicFactor = parseInt(organicValueInput.value, 10);
     const isOutline = borderCheckbox.checked; // Check if outline only is selected
 
     // Clear the canvas before drawing a new shape
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Set stroke or fill color based on the outline option
-    if (isOutline) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.fillStyle = 'transparent'; // No fill
-    } else {
-        ctx.fillStyle = color;
-    }
+    ctx.fillStyle = isOutline ? 'transparent' : color; // No fill for outline
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
 
     // Draw the selected shape
     switch (shape) {
@@ -99,7 +93,7 @@ formElement.addEventListener('submit', function (event) {
             drawPolygon(sides, isOutline);
             break;
         case 'organic':
-            drawOrganicShape(organicFactor, isOutline); // Draw organic shapes
+            drawOrganicShape(organicFactor, isOutline);
             break;
         case 'image':
             if (uploadedImage) {
@@ -119,22 +113,6 @@ clearButton.addEventListener('click', function () {
     uploadedImage = null; // Clear uploaded image on clear
 });
 
-// Handle image upload and drawing the image
-imageUpload.addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.onload = function () {
-                uploadedImage = img; // Store the image to be drawn later
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
 // Function to draw a circle
 function drawCircle(isOutline) {
     const centerX = canvas.width / 2;
@@ -143,11 +121,7 @@ function drawCircle(isOutline) {
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    if (isOutline) {
-        ctx.stroke();
-    } else {
-        ctx.fill();
-    }
+    isOutline ? ctx.stroke() : ctx.fill();
 }
 
 // Function to draw a rectangle
@@ -157,11 +131,7 @@ function drawRectangle(isOutline) {
     const x = (canvas.width - width) / 2;
     const y = (canvas.height - height) / 2;
 
-    if (isOutline) {
-        ctx.strokeRect(x, y, width, height);
-    } else {
-        ctx.fillRect(x, y, width, height);
-    }
+    isOutline ? ctx.strokeRect(x, y, width, height) : ctx.fillRect(x, y, width, height);
 }
 
 // Function to draw a square
@@ -170,11 +140,7 @@ function drawSquare(isOutline) {
     const x = (canvas.width - size) / 2;
     const y = (canvas.height - size) / 2;
 
-    if (isOutline) {
-        ctx.strokeRect(x, y, size, size);
-    } else {
-        ctx.fillRect(x, y, size, size);
-    }
+    isOutline ? ctx.strokeRect(x, y, size, size) : ctx.fillRect(x, y, size, size);
 }
 
 // Function to draw a triangle
@@ -189,11 +155,7 @@ function drawTriangle(isOutline) {
     ctx.lineTo(x + height / 2, y + height / 2); // Bottom right
     ctx.closePath();
 
-    if (isOutline) {
-        ctx.stroke();
-    } else {
-        ctx.fill();
-    }
+    isOutline ? ctx.stroke() : ctx.fill();
 }
 
 // Function to draw a polygon with a given number of sides
@@ -201,48 +163,36 @@ function drawPolygon(sides, isOutline) {
     const radius = 100;
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const angleStep = (2 * Math.PI) / sides;
 
     ctx.beginPath();
     for (let i = 0; i < sides; i++) {
-        const x = centerX + radius * Math.cos(i * angleStep);
-        const y = centerY + radius * Math.sin(i * angleStep);
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    }
-    ctx.closePath();
-
-    if (isOutline) {
-        ctx.stroke();
-    } else {
-        ctx.fill();
-    }
-}
-
-// Function to draw an organic shape
-function drawOrganicShape(organicFactor, isOutline) {
-    const radius = 100;
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-
-    ctx.beginPath();
-    for (let i = 0; i < 100; i++) {
-        const angle = (i / 100) * (2 * Math.PI);
-        const randomOffset = Math.random() * organicFactor;
-        const x = centerX + (radius + randomOffset) * Math.cos(angle);
-        const y = centerY + (radius + randomOffset) * Math.sin(angle);
+        const angle = (i * 2 * Math.PI) / sides;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
         ctx.lineTo(x, y);
     }
     ctx.closePath();
 
-    if (isOutline) {
-        ctx.stroke();
-    } else {
-        ctx.fill();
+    isOutline ? ctx.stroke() : ctx.fill();
+}
+
+// Function to draw an organic shape
+function drawOrganicShape(organicFactor, isOutline) {
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    ctx.beginPath();
+    const numPoints = 10; // Number of points for the organic shape
+    for (let i = 0; i < numPoints; i++) {
+        const angle = (i * 2 * Math.PI) / numPoints;
+        const radius = 100 + (Math.random() * organicFactor); // Add random radius variation
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        ctx.lineTo(x, y);
     }
+    ctx.closePath();
+
+    isOutline ? ctx.stroke() : ctx.fill();
 }
 
 // Function to draw the uploaded image
@@ -253,6 +203,7 @@ function drawImage(img) {
     ctx.drawImage(img, 0, 0, imgWidth, imgHeight); // Draw the uploaded image
     scanImageForShapes(); // Scan the image for black lines after drawing it
 }
+
 
 // Function to scan the uploaded image and redraw black lines
 function scanImageForShapes() {
@@ -270,7 +221,6 @@ function scanImageForShapes() {
     for (let y = 0; y < imgData.height; y++) {
         for (let x = 0; x < imgData.width; x++) {
             const index = (y * imgData.width + x) * 4;
-
             const r = data[index];
             const g = data[index + 1];
             const b = data[index + 2];
@@ -281,13 +231,14 @@ function scanImageForShapes() {
                 ctx.moveTo(x, y); // Start drawing from this pixel
 
                 // Check for adjacent black pixels to draw a line
-                if (x + 1 < imgData.width && data[index + 4] < 50) {
-                    ctx.lineTo(x + 1, y); // Draw to the right if it's black
-                } else if (y + 1 < imgData.height && data[index + imgData.width * 4] < 50) {
-                    ctx.lineTo(x, y + 1); // Draw down if it's black
+                if (x + 1 < imgData.width && data[index + 4] < 100) {
+                    ctx.lineTo(x + 1, y); // Draw to the right pixel
+                }
+                if (y + 1 < imgData.height && data[index + imgData.width * 4] < 100) {
+                    ctx.lineTo(x, y + 1); // Draw to the pixel below
                 }
 
-                ctx.stroke();
+                ctx.stroke(); // Draw the line
             }
         }
     }
