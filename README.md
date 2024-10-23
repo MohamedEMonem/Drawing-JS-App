@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 87107b8c4589872191c512066a449336e2541871
-```markdown
 # Drawing JS App
 
 A simple web application that allows users to draw various shapes on a canvas using HTML5, CSS, and JavaScript. Users can select from geometric shapes, organic shapes, or even upload an image to draw on.
